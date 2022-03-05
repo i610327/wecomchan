@@ -82,13 +82,21 @@ function send_to_wecom($text, $wecom_cid, $wecom_aid, $wecom_secret,  $wecom_tou
     if ($info && isset($info['access_token']) && strlen($info['access_token']) > 0) {
         $access_token = $info['access_token'];
         $url = 'https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token='.urlencode($access_token);
-        $data = new \stdClass();
-        $data->touser = $wecom_touid;
-        $data->agentid = $wecom_aid;
-        $data->msgtype = "text";
-        $data->text = ["content"=> $text];
-        $data->duplicate_check_interval = 600;
-
+            // 文本卡片消息体
+            $data = array(
+                'touser' => $wecom_touid,
+                'agentid' => $wecom_aid,
+                'msgtype' => 'textcard',
+                'textcard' => array(
+                    'title' => $title,    //标题
+                    'description' => $description,//内容
+                    'url' => $link,  //链接地址
+                    'btntxt' => '阅读全文',
+                ),
+                'enable_id_trans' => 0,
+                'enable_duplicate_check' => 0,
+                'duplicate_check_interval' => 1800
+            ); 
         $data_json = json_encode($data);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
